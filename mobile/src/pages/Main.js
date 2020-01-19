@@ -3,30 +3,37 @@ import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity, Keyboard } 
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { requestPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
 import { MaterialIcons } from '@expo/vector-icons';
+
 import api from '../services/api';
+import {connect, disconnect} from '../services/socket';
 
 
 function Main({ navigation }) {
     const [devs, setDevs] = useState([]);
     const [currentRegion, setCurrentRegion] = useState(null);
+    const [techs, setTechs] = useState('');
 
+    function setupWebSocket() {
+        connect();
+        console.log(connect());
+        
+    }
     async function loadDevs() {
         const { latitude, longitude } = currentRegion;
         const response = await api.get('/search', {
             params: {
                 latitude,
                 longitude,
-                techs: 'Node.js'
+                techs
             }
         });
         
-        console.log(reponse);
-        
         setDevs(response.data.devs);
+        setupWebSocket();
     };
     function handleRegionChanged(region) {
         console.log(region);
-        
+        setupWebSocket();
         setCurrentRegion(region);
     };
     useEffect(() => {
@@ -56,12 +63,12 @@ function Main({ navigation }) {
                 onRegionChangeComplete={handleRegionChanged}
                 initialRegion={currentRegion}
                 style={styles.map}>
-                {devs.map( dev => {
+                {devs.map( dev => (
                     <Marker 
                     key={dev._id}
                     coordinate={{ 
-                        latitude: dev.location.coordinates[0],
-                         longitude: dev.location.coordinates[1],
+                        latitude: dev.location.coordinates[1],
+                         longitude: dev.location.coordinates[0],
                           }}>
                         <Image 
                         style={styles.avatar} 
@@ -78,7 +85,7 @@ function Main({ navigation }) {
                             </View>
                         </Callout>
                     </Marker>
-                })}
+                ))}
             </MapView>
             <View style={styles.searchForm}>
                 <TextInput style={styles.searchInput}
@@ -86,6 +93,7 @@ function Main({ navigation }) {
                     placeholderTextColor="#999"
                     autoCapitalize="words"
                     autoCorrect={false}
+                    onChangeText = {setTechs}
                 ></TextInput>
                 <TouchableOpacity onPress={loadDevs} style={styles.loadButton}>
                     <MaterialIcons name="my-location" size={20} color="#FFF"></MaterialIcons>
