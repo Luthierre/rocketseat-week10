@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function DevForm({onSubmit}) {
+function DevForm({ onSubmit }) {
     const [github_username, setGithub_username] = useState('');
     const [techs, setTechs] = useState('');
     const [latitude, setLatitude] = useState('');
@@ -24,7 +24,8 @@ function DevForm({onSubmit}) {
     }, []);
 
     async function handleSubmit(e) {
-        e.preventDefaul();
+	
+	
         await onSubmit({
             github_username,
             techs,

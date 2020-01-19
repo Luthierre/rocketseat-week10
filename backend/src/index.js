@@ -4,10 +4,9 @@ const routes = require('./routes');
 const cors  = require('cors');
 
 const app = express();
-mongoose.connect('mongodb://localhost/weekteen',{
+mongoose.connect('mongodb+srv://oministack:8M9uzDNAGzuuVWS@cluster0-zddk2.mongodb.net/test?retryWrites=true&w=majority',{
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
+    useUnifiedTopology: true
 });
 app.use(cors());
 app.use(express.json());
