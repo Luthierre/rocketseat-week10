@@ -14,9 +14,13 @@ function Main({ navigation }) {
     const [techs, setTechs] = useState('');
 
     function setupWebSocket() {
-        connect();
-        console.log(connect());
-        
+        const {latitude, longitude} = currentRegion;
+
+        connect(
+            latitude,
+            longitude,
+            techs,
+        );
     }
     async function loadDevs() {
         const { latitude, longitude } = currentRegion;
@@ -32,8 +36,7 @@ function Main({ navigation }) {
         setupWebSocket();
     };
     function handleRegionChanged(region) {
-        console.log(region);
-        setupWebSocket();
+        
         setCurrentRegion(region);
     };
     useEffect(() => {

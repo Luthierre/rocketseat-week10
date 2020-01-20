@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Dev = require('../modules/Dev');
 const parseStringAsArray = require('../utils/parseStringAsArray');
+const { findConnections } = require('../websocket');
 // index, show, store, update, destroy
 module.exports = {
     async index(request, response) {
@@ -14,10 +15,10 @@ module.exports = {
 
         let dev = await Dev.findOne({ github_username });
         if (!dev) {
-            try {
+
             let apiReponse = await axios.get(`http://api.github.com/users/${github_username}`);
             //console.log(apiResponse);
-                
+
             const { name = login, avatar_url, bio } = apiReponse.data;
 
             const location = {
@@ -34,49 +35,49 @@ module.exports = {
                 location,
 
             });
-        } catch(err){
-            console.log(err);
-            
-        }
-        }
 
+
+           /*  const sendSocketMessageTo = findConnections(
+                {
+                    latitude,
+                    longitude,
+                    techsArray,
+                });
+            console.log(sendSocketMessageTo); */
+        }
         return response.json(dev);
     },
     async update(request, response) {
-        try {
-            const { github_username } = request.params;
-            const { name, bio, avatar_url, techs, latitude, longitude } = request.body;
-            const devSalvo = await Dev.findOne(github_username);
 
-            const locationUpdate = {
-                type: 'Point',
-                coordinates: [longitude, latitude]
-            };
-            const techsArrayUpate = parseStringAsArray(techs);
-            const devAlterado = await Dev.updateOne({ _id: devSalvo._id },
-                {
-                    $set: {
-                        name,
-                        avatar_url,
-                        bio,
-                        techs: techsArrayUpate,
-                        location: locationUpdate,
-                    }
-                });
+        const { github_username } = request.params;
+        const { name, bio, avatar_url, techs, latitude, longitude } = request.body;
+        const devSalvo = await Dev.findOne(github_username);
 
-            return response.json(devAlterado);
-        } catch (err) {
-            return response.json({message: err});
-        }
+        const locationUpdate = {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+        };
+        const techsArrayUpate = parseStringAsArray(techs);
+        const devAlterado = await Dev.updateOne({ _id: devSalvo._id },
+            {
+                $set: {
+                    name,
+                    avatar_url,
+                    bio,
+                    techs: techsArrayUpate,
+                    location: locationUpdate,
+                }
+            });
+
+        return response.json(devAlterado);
+
 
     },
     async destroy(request, response) {
-        try{                
+
         const devExcluido = await Dev.deleteOne({ _id: request.params.devId });
         return response.json(devExcluido);
-        } catch(err) {
-            return response.json({message: err});
-        }
+
 
     }
 };

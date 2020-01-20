@@ -27,4 +27,4 @@ app.use(routes);
 //MongoDB (não-relacional)
 
 
-app.listen(3333);
+server.listen(3333);
